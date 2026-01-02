@@ -1,9 +1,16 @@
-import Image from "next/image";
+"use client";
+import { Hero } from "../../components/Hero";
+import { Features } from "../../components/Features";
+import { ProductShowcase } from "../../components/ProductShowcase";
+import { Navbar } from "../../components/Navbar";
 
-export default function Home() {
+export default function App() {
   return (
-    <div className="flex min-h-screen items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      Landing page
+    <div className="min-h-screen bg-background">
+      <Navbar />
+      <Hero />
+      <ProductShowcase />
+      <Features />
     </div>
   );
 }
