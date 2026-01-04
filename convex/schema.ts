@@ -15,4 +15,11 @@ export default defineSchema({
   })
     .index("byClerkUserId", ["clerkUserId"])
     .index("byEmail", ["email"]),
+
+  files: defineTable({
+    userId: v.id("users"),
+    name: v.string(),
+    description: v.optional(v.string()),
+    fileId: v.string(),
+  }).index("byUserId", ["userId"]),
 });
