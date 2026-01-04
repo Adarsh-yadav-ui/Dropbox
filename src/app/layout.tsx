@@ -3,6 +3,7 @@ import { Orbitron } from "next/font/google";
 import "./globals.css";
 import { ClerkProvider } from "@clerk/nextjs";
 import ConvexClientProvider from "../provider/convex-client-proivder";
+import { Toaster } from "../components/ui/sonner";
 
 const orbitron = Orbitron({
   variable: "--font-orbitron",
@@ -25,6 +26,7 @@ export default function RootLayout({
       <body
         className={`${orbitron.variable} ${orbitron.className} ${orbitron.style} antialiased`}
       >
+        <Toaster position="bottom-right" />
         <ClerkProvider>
           <ConvexClientProvider>{children}</ConvexClientProvider>
         </ClerkProvider>
