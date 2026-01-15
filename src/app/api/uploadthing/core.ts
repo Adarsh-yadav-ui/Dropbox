@@ -11,23 +11,23 @@ export const ourFileRouter = {
   filesUploader: f({
     image: {
       maxFileSize: "64MB",
-      maxFileCount: 5,
+      maxFileCount: 1,
     },
     video: {
       maxFileSize: "1GB",
-      maxFileCount: 2,
+      maxFileCount: 1,
     },
     pdf: {
       maxFileSize: "256MB",
-      maxFileCount: 5,
+      maxFileCount: 1,
     },
     audio: {
       maxFileSize: "256MB",
-      maxFileCount: 2,
+      maxFileCount: 1,
     },
     text: {
       maxFileSize: "64MB",
-      maxFileCount: 10,
+      maxFileCount: 1,
     },
     
   })
@@ -42,11 +42,9 @@ export const ourFileRouter = {
       // Whatever is returned here is accessible in onUploadComplete as `metadata`
       return { userId: user.id };
     })
-    .onUploadComplete(async ({ metadata, file }) => {
+    .onUploadComplete(async ({ metadata }) => {
       // This code RUNS ON YOUR SERVER after upload
-      console.log("Upload complete for userId:", metadata.userId);
 
-      console.log("file url", file.ufsUrl);
 
       // !!! Whatever is returned here is sent to the clientside `onClientUploadComplete` callback
       return { uploadedBy: metadata.userId };

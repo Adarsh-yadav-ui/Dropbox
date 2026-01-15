@@ -1,227 +1,233 @@
 "use client";
 
-import {
-  Drawer,
-  DrawerContent,
-  DrawerDescription,
-  DrawerHeader,
-  DrawerTitle,
-  DrawerTrigger,
-} from "../../components/ui/drawer";
-import { ScrollArea } from "../../components/ui/scroll-area";
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { z } from "zod";
-import { toast } from "sonner";
-import { Field, FieldLabel, FieldError } from "../../components/ui/field";
-import { Button } from "../../components/ui/button";
-import { Input } from "../../components/ui/input";
-import { Form } from "../../components/ui/form";
-import { UploadButton } from "../../lib/uploadthing";
-import { useMutation, useQuery } from "convex/react";
+import { useQuery } from "convex/react";
 import { api } from "../../../convex/_generated/api";
-import { useState } from "react";
-import { Upload, FileText, CheckCircle2 } from "lucide-react";
+import { PieData } from "../../components/pieChart";
+import { FileCard } from "../../components/fileCard";
+import {
+  Video,
+  Image as ImageIcon,
+  FileText,
+  Music,
+  File,
+  FolderOpen,
+  ArrowUpRight,
+} from "lucide-react";
+import Link from "next/link";
 
-const formSchema = z.object({
-  Name: z
-    .string()
-    .min(3, "Name must be at least 3 characters")
-    .max(49, "Name must be less than 50 characters"),
-  Description: z
-    .string()
-    .min(3, "Description must be at least 3 characters")
-    .max(60, "Description must be less than 60 characters"),
-});
-
-export default function Home() {
-  const [uploadedFile, setUploadedFile] = useState<{
-    name: string;
-    url: string;
-  } | null>(null);
-  const [isOpen, setIsOpen] = useState(false);
-
-  const form = useForm<z.infer<typeof formSchema>>({
-    resolver: zodResolver(formSchema),
-    defaultValues: {
-      Name: "",
-      Description: "",
-    },
+export default function Page() {
+  const currentUser = useQuery(api.users.current);
+  const fileDataForUser = useQuery(api.files.getFilesForUser, {
+    userId: currentUser?._id,
   });
 
-  const createFile = useMutation(api.files.createFile);
-  const currentUser = useQuery(api.users.current);
-
-  async function onSubmit(values: z.infer<typeof formSchema>) {
-    if (!uploadedFile) {
-      toast("Please upload a file before submitting");
-      return;
+  const fileDataForUserAstypeForAudio = useQuery(
+    api.files.getRecentFileForUserAsType,
+    {
+      userId: currentUser?._id,
+      fileType: "Audio",
     }
-
-    if (!currentUser) {
-      toast("User not authenticated");
-      return;
+  );
+  const fileDataForUserAstypeForVideo = useQuery(
+    api.files.getRecentFileForUserAsType,
+    {
+      userId: currentUser?._id,
+      fileType: "Video",
     }
-
-    try {
-      await createFile({
-        name: values.Name,
-        description: values.Description,
-        userId: currentUser._id,
-        fileId: uploadedFile.url,
-      });
-
-      toast("File successfully uploaded and saved!");
-
-      // Reset form and state
-      form.reset();
-      setUploadedFile(null);
-      setIsOpen(false);
-    } catch (error) {
-      console.error("Form submission error", error);
-      toast("Failed to submit the form. Please try again.");
+  );
+  const fileDataForUserAstypeForImages = useQuery(
+    api.files.getRecentFileForUserAsType,
+    {
+      userId: currentUser?._id,
+      fileType: "Image",
     }
-  }
+  );
 
-  const handleDrawerChange = (open: boolean) => {
-    setIsOpen(open);
-    if (!open) {
-      // Reset form and state when drawer closes
-      form.reset();
-      setUploadedFile(null);
+  const fileDataForUserAstypeForPDFs = useQuery(
+    api.files.getRecentFileForUserAsType,
+    {
+      userId: currentUser?._id,
+      fileType: "PDF",
     }
-  };
+  );
+
+  const fileDataForUserAstypeForDocuments = useQuery(
+    api.files.getRecentFileForUserAsType,
+    {
+      userId: currentUser?._id,
+      fileType: "Document",
+    }
+  );
+  const fileDataForUserAstypeForOthers = useQuery(
+    api.files.getRecentFileForUserAsType,
+    {
+      userId: currentUser?._id,
+      fileType: "other",
+    }
+  );
+
+  const imageFiles =
+    fileDataForUser?.filter((file) => file.fileType === "Image").length ?? 0;
+  const PDF_Files =
+    fileDataForUser?.filter((file) => file.fileType === "PDF").length ?? 0;
+  const documentFiles =
+    fileDataForUser?.filter((file) => file.fileType === "Document").length ?? 0;
+  const audioFiles =
+    fileDataForUser?.filter((file) => file.fileType === "Audio").length ?? 0;
+  const videoFiles =
+    fileDataForUser?.filter((file) => file.fileType === "Video").length ?? 0;
+  const otherFiles =
+    fileDataForUser?.filter((file) => file.fileType === "other").length ?? 0;
+
+  // File type configuration with icons and colors
+  const fileTypeConfig = [
+    {
+      type: "Audio",
+      icon: Music,
+      color: "bg-violet-500",
+      count: audioFiles,
+      data: fileDataForUserAstypeForAudio,
+    },
+    {
+      type: "Video",
+      icon: Video,
+      color: "bg-rose-500",
+      count: videoFiles,
+      data: fileDataForUserAstypeForVideo,
+    },
+    {
+      type: "Images",
+      icon: ImageIcon,
+      color: "bg-blue-500",
+      count: imageFiles,
+      data: fileDataForUserAstypeForImages,
+      fileType: "Image",
+    },
+    {
+      type: "PDFs",
+      icon: FileText,
+      color: "bg-red-500",
+      count: PDF_Files,
+      data: fileDataForUserAstypeForPDFs,
+      fileType: "PDF",
+    },
+    {
+      type: "Documents",
+      icon: File,
+      color: "bg-emerald-500",
+      count: documentFiles,
+      data: fileDataForUserAstypeForDocuments,
+      fileType: "Document",
+    },
+    {
+      type: "Other",
+      icon: FolderOpen,
+      color: "bg-slate-500",
+      count: otherFiles,
+      data: fileDataForUserAstypeForOthers,
+      fileType: "other",
+    },
+  ];
+
+  const totalFiles = fileDataForUser?.length ?? 0;
 
   return (
-    <main className="p-4">
-      <Drawer open={isOpen} onOpenChange={handleDrawerChange}>
-        <DrawerTrigger asChild>
-          <Button size="lg" className="gap-2">
-            <Upload className="w-5 h-5" />
-            Upload File
-          </Button>
-        </DrawerTrigger>
-        <DrawerContent className="max-h-[90vh]">
-          <div className="mx-auto w-full max-w-2xl">
-            <DrawerHeader>
-              <DrawerTitle className="text-xl font-semibold">
-                Upload a New File
-              </DrawerTitle>
-              <DrawerDescription className="text-sm">
-                Private files are only seen by the owner, but public files can
-                be seen by anyone
-              </DrawerDescription>
-            </DrawerHeader>
+    <div className="min-h-screen bg-zinc-50 dark:bg-zinc-950">
+      <div className="mx-auto max-w-7xl px-6 py-12">
+        {/* Header */}
+        <div className="mb-12">
+          <h1 className="text-4xl font-semibold text-zinc-900 dark:text-zinc-50 mb-2 tracking-tight">
+            Files
+          </h1>
+          <p className="text-zinc-600 dark:text-zinc-400">
+            {totalFiles} total files
+          </p>
+        </div>
 
-            <ScrollArea className="h-[calc(90vh-160px)] px-4">
-              <Form {...form}>
-                <form
-                  onSubmit={form.handleSubmit(onSubmit)}
-                  className="space-y-4 py-4 pb-8"
-                >
-                  {/* File Name Field */}
-                  <Field>
-                    <FieldLabel htmlFor="Name" className="text-sm font-medium">
-                      File Name <span className="text-red-500">*</span>
-                    </FieldLabel>
-                    <Input
-                      id="Name"
-                      placeholder="e.g., Student ID Card 2024"
-                      className="mt-1"
-                      {...form.register("Name")}
-                    />
-                    <FieldError className="text-xs mt-1">
-                      {form.formState.errors.Name?.message}
-                    </FieldError>
-                  </Field>
+        {/* Stats Grid */}
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4 mb-16">
+          {fileTypeConfig.map(({ type, icon: Icon, color, count }) => (
+            <div
+              key={type}
+              className="bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-lg p-5 hover:border-zinc-300 dark:hover:border-zinc-700 transition-colors"
+            >
+              <div
+                className={`w-10 h-10 rounded-md ${color} flex items-center justify-center mb-4`}
+              >
+                <Icon className="w-5 h-5 text-white" strokeWidth={2} />
+              </div>
+              <div className="text-2xl font-semibold text-zinc-900 dark:text-zinc-50 mb-1">
+                {count}
+              </div>
+              <div className="text-sm text-zinc-600 dark:text-zinc-400">
+                {type}
+              </div>
+            </div>
+          ))}
+        </div>
 
-                  {/* Description Field */}
-                  <Field>
-                    <FieldLabel
-                      htmlFor="Description"
-                      className="text-sm font-medium"
-                    >
-                      Description <span className="text-red-500">*</span>
-                    </FieldLabel>
-                    <Input
-                      id="Description"
-                      placeholder="Brief description of the file"
-                      className="mt-1"
-                      {...form.register("Description")}
-                    />
-                    <FieldError className="text-xs mt-1">
-                      {form.formState.errors.Description?.message}
-                    </FieldError>
-                  </Field>
-
-                  {/* File Upload Section */}
-                  <Field>
-                    <FieldLabel className="text-sm font-medium">
-                      Upload File <span className="text-red-500">*</span>
-                    </FieldLabel>
-                    <div className="mt-1 border-2 border-dashed border-gray-300 rounded-lg p-4 text-center hover:border-gray-400 transition-colors">
-                      {uploadedFile ? (
-                        <div className="flex items-center justify-center gap-2 text-green-600">
-                          <CheckCircle2 className="w-4 h-4" />
-                          <span className="font-medium text-sm truncate">
-                            {uploadedFile.name}
-                          </span>
-                        </div>
-                      ) : (
-                        <div className="flex flex-col items-center gap-2">
-                          <FileText className="w-8 h-8 text-gray-400" />
-                          <p className="text-xs text-gray-500">
-                            Click below to upload your file
-                          </p>
-                        </div>
-                      )}
-
-                      <div className="mt-3">
-                        <UploadButton
-                          className="bg-gray-900 min-w-fit min-h-fit pb-3 rounded-md"
-                          endpoint="filesUploader"
-                          onClientUploadComplete={async (res) => {
-                            if (res && res.length > 0) {
-                              const file = res[0];
-                              setUploadedFile({
-                                name: file.name,
-                                url: file.ufsUrl as string,
-                              });
-                              toast("File uploaded successfully!");
-                            }
-                          }}
-                          onUploadError={(error: Error) => {
-                            toast(`Upload failed: ${error.message}`);
-                          }}
-                        />
-                      </div>
-                    </div>
-                  </Field>
-
-                  {/* Submit Button */}
-                  <div className="flex justify-end gap-2 pt-3">
-                    <Button
-                      type="button"
-                      variant="outline"
-                      onClick={() => handleDrawerChange(false)}
-                    >
-                      Cancel
-                    </Button>
-                    <Button
-                      type="submit"
-                      disabled={!uploadedFile}
-                      className="gap-2"
-                    >
-                      <Upload className="w-4 h-4" />
-                      Submit
-                    </Button>
-                  </div>
-                </form>
-              </Form>
-            </ScrollArea>
+        {/* Recent Files - All Types */}
+        <div>
+          <div className="flex items-center justify-between mb-6">
+            <h2 className="text-2xl font-semibold text-zinc-900 dark:text-zinc-50 tracking-tight">
+              Recent Files
+            </h2>
+            <PieData />
+            {totalFiles > 0 && (
+              <Link href={`/dashboard/files/users/${currentUser._id}`}>
+              <button className="flex items-center gap-1.5 text-sm text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-200 transition-colors">
+                View all
+                <ArrowUpRight className="w-4 h-4" />
+              </button>
+              </Link>
+            )}
           </div>
-        </DrawerContent>
-      </Drawer>
-    </main>
+
+          {totalFiles === 0 ? (
+            <div className="bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-lg p-12 text-center">
+              <div className="w-16 h-16 rounded-full bg-zinc-100 dark:bg-zinc-800 flex items-center justify-center mx-auto mb-4">
+                <FolderOpen
+                  className="w-8 h-8 text-zinc-400 dark:text-zinc-600"
+                  strokeWidth={2}
+                />
+              </div>
+              <h3 className="text-lg font-medium text-zinc-900 dark:text-zinc-100 mb-2">
+                No files yet
+              </h3>
+              <p className="text-zinc-600 dark:text-zinc-400 text-sm">
+                Upload your first file to get started
+              </p>
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+              {fileTypeConfig.map(
+                ({ type, icon: Icon, color, count, data, fileType }) => {
+                  if (!data || data.length === 0) return null;
+
+                  return data.map((item) => (
+                    <FileCard
+                      key={item?._id}
+                      PNGPath={
+                        <div
+                          className={`w-12 h-12 rounded-md ${color} flex items-center justify-center shrink-0`}
+                        >
+                          <Icon
+                            className="w-6 h-6 text-white"
+                            strokeWidth={2}
+                          />
+                        </div>
+                      }
+                      FileType={fileType || type}
+                      numOfFiles={count}
+                      last_Updated={item?._creationTime}
+                    />
+                  ));
+                }
+              )}
+            </div>
+          )}
+        </div>
+      </div>
+    </div>
   );
 }

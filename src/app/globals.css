@@ -1,7 +1,7 @@
 @import "tailwindcss";
 @import "tw-animate-css";
 @import "uploadthing/tw/v4";
-@source "../node_modules/@uploadthing/react/dist"; 
+@source "../node_modules/@uploadthing/react/dist";
 
 @custom-variant dark (&:is(.dark *));
 
@@ -124,4 +124,17 @@
   body {
     @apply bg-background text-foreground;
   }
+}
+
+::view-transition-old(root),
+::view-transition-new(root) {
+  animation: none;
+  mix-blend-mode: normal;
+}
+
+.custom-card-shape {
+  clip-path: path(
+    "M40,0 H260 Q300,0 300,40 V200 Q300,240 260,240 H40 Q0,240 0,200 V80 Q0,40 40,40 Z"
+  );
+  border-radius: 24px;
 }
