@@ -21,5 +21,7 @@ export default defineSchema({
     name: v.string(),
     description: v.optional(v.string()),
     fileId: v.string(),
+    visibility: v.string(),
+    fileType: v.string(),
   }).index("byUserId", ["userId"]),
 });

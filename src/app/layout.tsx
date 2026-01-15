@@ -1,13 +1,14 @@
 import type { Metadata } from "next";
-import { Orbitron } from "next/font/google";
+import {  Poppins } from "next/font/google";
 import "./globals.css";
 import { ClerkProvider } from "@clerk/nextjs";
 import ConvexClientProvider from "../provider/convex-client-proivder";
 import { Toaster } from "../components/ui/sonner";
+import { ThemeProvider } from "../provider/theme-provider";
 
-const orbitron = Orbitron({
-  variable: "--font-orbitron",
+const poppins = Poppins({
   subsets: ["latin"],
+  weight: "400"
 });
 
 export const metadata: Metadata = {
@@ -22,13 +23,22 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
+    <html lang="en" suppressHydrationWarning suppressContentEditableWarning>
       <body
-        className={`${orbitron.variable} ${orbitron.className} ${orbitron.style} antialiased`}
+        className={`${poppins.className} ${poppins.style} antialiased`}
       >
         <Toaster position="bottom-right" />
         <ClerkProvider>
-          <ConvexClientProvider>{children}</ConvexClientProvider>
+          <ConvexClientProvider>
+            <ThemeProvider
+              attribute="class"
+              defaultTheme="system"
+              enableSystem
+              disableTransitionOnChange
+            >
+              {children}
+            </ThemeProvider>
+          </ConvexClientProvider>
         </ClerkProvider>
       </body>
     </html>

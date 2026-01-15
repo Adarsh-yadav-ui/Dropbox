@@ -1,13 +1,11 @@
 "use client";
 
 import Image from "next/image";
-import React from "react";
 import Link from "next/link";
 import { Button } from "./ui/button";
 import { Authenticated, Unauthenticated } from "convex/react";
-import { SignIn, SignInButton, SignUpButton, UserButton } from "@clerk/nextjs";
+import { SignInButton, SignUpButton, UserButton } from "@clerk/nextjs";
 import UserStored from "./UserStored";
-import { ArrowRight } from "lucide-react";
 
 const navItems = [
   { href: "/", label: "Home" },
@@ -55,17 +53,18 @@ export const Navbar = () => {
           <div className="flex items-center">
             <Authenticated>
               <UserStored />
-              <Button variant="ghost" className="mr-2">
+              <Button variant="ghost" className="mr-2" asChild>
                 <Link href="/dashboard">Dashboard</Link>
               </Button>
               <UserButton />
             </Authenticated>
+
             <Unauthenticated>
-              <Button>
-                <SignInButton mode="modal" />
+              <Button asChild>
+                <SignInButton />
               </Button>
-              <Button>
-                <SignUpButton mode="modal" />
+              <Button asChild>
+                <SignUpButton />
               </Button>
             </Unauthenticated>
           </div>
