@@ -1,36 +1,36 @@
 import { motion } from "motion/react";
-import { Gem, ShieldCheck, Truck, Tag, Heart, Star } from "lucide-react";
+import { Cloud, Lock, Users, Zap, FolderSync, Shield } from "lucide-react";
 
 const features = [
   {
-    icon: Gem,
-    title: "Premium Materials",
-    description: "Our shoes are crafted from the finest materials to ensure durability and comfort.",
+    icon: Cloud,
+    title: "Cloud Storage",
+    description: "Store all your files securely in the cloud and access them from anywhere, anytime.",
   },
   {
-    icon: ShieldCheck,
-    title: "Durable & Long-lasting",
-    description: "Built to last, our shoes can withstand the test of time and daily wear.",
+    icon: Lock,
+    title: "Private & Secure",
+    description: "Your files are encrypted and protected with industry-leading security measures.",
   },
   {
-    icon: Truck,
-    title: "Free & Fast Shipping",
-    description: "Get your new shoes delivered to your doorstep in no time, free of charge.",
+    icon: Users,
+    title: "Easy Sharing",
+    description: "Share files and folders publicly or privately with just a few clicks.",
   },
   {
-    icon: Tag,
-    title: "Affordable Prices",
-    description: "We offer competitive prices without compromising on quality.",
+    icon: Zap,
+    title: "Fast Upload & Sync",
+    description: "Lightning-fast file uploads and automatic syncing across all your devices.",
   },
   {
-    icon: Heart,
-    title: "Made with Love",
-    description: "Every pair of shoes is made with passion and attention to detail.",
+    icon: FolderSync,
+    title: "Real-time Collaboration",
+    description: "Work together with your team in real-time with seamless file collaboration.",
   },
   {
-    icon: Star,
-    title: "Top-rated by Customers",
-    description: "Our customers love our shoes, and we're sure you will too!",
+    icon: Shield,
+    title: "Reliable Backup",
+    description: "Never lose your important files with automatic backup and version history.",
   },
 ];
 
@@ -46,7 +46,7 @@ export function Features() {
           className="text-4xl mb-4"
           style={{ fontWeight: 600 }}
         >
-          Why Choose Our Shoes?
+          Why Choose Dropbox?
         </motion.h2>
         <motion.p
           initial={{ opacity: 0, y: 20 }}
@@ -55,7 +55,7 @@ export function Features() {
           viewport={{ once: true }}
           className="text-lg text-muted-foreground max-w-2xl mx-auto"
         >
-          We provide the best shoes with the best quality and at the best prices.
+          Everything you need to store, share, and collaborate on your files in one place.
         </motion.p>
       </div>
 
@@ -92,13 +92,13 @@ export function Features() {
       >
         <div className="inline-flex flex-col items-center gap-6 p-12 rounded-2xl bg-linear-to-b from-muted/50 to-background border border-border">
           <h3 className="text-3xl" style={{ fontWeight: 600 }}>
-            Ready to find your perfect pair?
+            Ready to get started?
           </h3>
           <p className="text-muted-foreground max-w-md">
-            Browse our collection and find the shoes that are right for you.
+            Start uploading and sharing your files today. It's free to get started!
           </p>
           <button className="px-8 py-3 rounded-lg bg-primary text-primary-foreground hover:bg-primary/90 transition-colors">
-            Shop Now
+            Sign Up Now
           </button>
         </div>
       </motion.div>
