@@ -27,10 +27,10 @@ export function Hero() {
             className="text-5xl sm:text-6xl lg:text-7xl tracking-tight mb-6"
             style={{ fontWeight: 600, lineHeight: 1.1 }}
           >
-            Step Up Your 
+            Your Files,
             <br />
             <span className="bg-linear-to-r from-foreground via-foreground/80 to-foreground/60 bg-clip-text text-transparent">
-              Style
+              Anywhere
             </span>
           </motion.h1>
 
@@ -42,8 +42,8 @@ export function Hero() {
             className="text-lg sm:text-xl text-muted-foreground max-w-2xl mx-auto mb-10"
             style={{ lineHeight: 1.6 }}
           >
-            Discover our new collection of shoes that will make you stand out. 
-            High-quality materials, comfortable fit, and stylish designs.
+            Store, sync, and share your files securely with Dropbox. 
+            Access your content from any device, collaborate with others, and keep everything organized.
           </motion.p>
 
           {/* CTA buttons */}
@@ -54,10 +54,10 @@ export function Hero() {
             className="flex flex-col sm:flex-row gap-4 justify-center items-center"
           >
             <Button size="lg" className="px-8 h-12">
-              Shop Now
+              Get Started Free
             </Button>
             <Button size="lg" variant="outline" className="px-8 h-12">
-              Explore Collection
+              View Plans
             </Button>
           </motion.div>
 
@@ -68,7 +68,7 @@ export function Hero() {
             transition={{ duration: 0.5, delay: 0.4 }}
             className="mt-12 text-sm text-muted-foreground"
           >
-            Trusted by over 50,000 happy customers worldwide
+            Trusted by over 700 million users worldwide
           </motion.div>
         </div>
       </div>

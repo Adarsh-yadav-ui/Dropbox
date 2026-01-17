@@ -60,7 +60,7 @@ export const Navbar = () => {
             </Authenticated>
 
             <Unauthenticated>
-              <Button asChild>
+              <Button asChild className="mx-3">
                 <SignInButton />
               </Button>
               <Button asChild>
