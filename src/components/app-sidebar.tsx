@@ -2,6 +2,19 @@
 
 import * as React from "react";
 
+import Image from "next/image";
+import { UserButton } from "@clerk/nextjs";
+import { useQuery } from "convex/react";
+import Link from "next/link";
+import {
+  LayoutDashboard,
+  Folder,
+  LucideFileImage,
+  Clapperboard,
+  PieChart,
+  Settings,
+} from "lucide-react";
+
 import { SearchForm } from "./search-form-private";
 import {
   Sidebar,
@@ -16,37 +29,43 @@ import {
   SidebarRail,
 } from "../components/ui/sidebar";
 import { AnimatedThemeToggler } from "./animated-theme-toggler";
-import Image from "next/image";
-import { UserButton } from "@clerk/nextjs";
-import { useQuery } from "convex/react";
 import { api } from "../../convex/_generated/api";
-import Link from "next/link";
-import { Spinner } from "./ui/spinner";
+
 const data = {
   navMain: [
     {
-      title: "Dashboard",
+      title: "Navigation",
       url: "/dashboard",
       items: [
         {
-          title: "Public files",
-          url: "#",
+          title: "Dashboard",
+          url: "/dashboard",
+          icon: LayoutDashboard,
         },
         {
-          title: "Private files",
-          url: "#",
+          title: "Documents",
+          url: "/dashboard/documents",
+          icon: Folder,
         },
         {
-          title: "Next.js Compiler",
-          url: "#",
+          title: "Images",
+          url: "/dashboard/images",
+          icon: LucideFileImage,
         },
         {
-          title: "Supported Browsers",
-          url: "#",
+          title: "Media",
+          url: "/dashboard/media",
+          icon: Clapperboard,
         },
         {
-          title: "Turbopack",
-          url: "#",
+          title: "Others",
+          url: "/dashboard/others",
+          icon: PieChart,
+        },
+        {
+          title: "Settings",
+          url: "/dashboard/settings",
+          icon: Settings,
         },
       ],
     },
@@ -55,9 +74,6 @@ const data = {
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   const currentUser = useQuery(api.users.current);
-  const recentFiveFiles = useQuery(api.files.getRecentFilesForUser, {
-    userId: currentUser?._id,
-  });
 
   return (
     <Sidebar {...props}>
@@ -84,45 +100,33 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
       </SidebarHeader>
       <SidebarContent>
         {/* We create a SidebarGroup for each parent. */}
-        <SidebarGroup>
-          <SidebarGroupLabel>Recent files</SidebarGroupLabel>
 
-          {recentFiveFiles === undefined ? (
-            <div className="ml-4 mt-2 mb-1 text-sm text-gray-500 flex items-center">
-              <Spinner className="mr-2" />
-              Loading recent files...
-            </div>
-          ) : recentFiveFiles.length === 0 ? (
-            <div className="ml-4 mt-2 mb-1 text-sm text-gray-500">
-              No files found{"  :("}
-            </div>
-          ) : (
-            recentFiveFiles.map((item) => (
-              <SidebarGroupContent key={item._id} className="ml-2">
-                <SidebarMenu>
-                  <SidebarMenuItem key={item?.name}>
-                    <SidebarMenuButton asChild>
-                      <Link
-                        href={"/dashboard/files/" + item._id || "Loading..."}
-                      >
-                        {item?.name}
-                      </Link>
-                    </SidebarMenuButton>
-                  </SidebarMenuItem>
-                </SidebarMenu>
-              </SidebarGroupContent>
-            ))
-          )}
-        </SidebarGroup>
         {data.navMain.map((item) => (
           <SidebarGroup key={item?.title}>
-            <SidebarGroupLabel>{item?.title}</SidebarGroupLabel>
-            <SidebarGroupContent className="ml-2">
-              <SidebarMenu>
-                {item?.items.map((item) => (
-                  <SidebarMenuItem key={item?.title}>
+            <SidebarGroupLabel className="font-extrabold text-[14px] my-2">
+              {item?.title}
+            </SidebarGroupLabel>
+            <SidebarGroupContent>
+              <SidebarMenu className="space-y-3">
+                {item?.items.map((menuItem, index) => (
+                  <SidebarMenuItem key={menuItem?.title}>
                     <SidebarMenuButton asChild>
-                      <a href={item?.url}>{item?.title}</a>
+                      <Link
+                        href={menuItem?.url}
+                        className={`
+                  flex items-center gap-4 px-6 py-4.5 rounded-full transition-all w-full
+                  ${
+                    index === 0
+                      ? "bg-[#FF6B7A] hover:bg-[#cc5561] text-white shadow-lg "
+                      : "text-gray-400 hover:bg-gray-100"
+                  }
+                `}
+                      >
+                        <menuItem.icon className="size-6" />
+                        <span className="font-semibold text-base">
+                          {menuItem?.title}
+                        </span>
+                      </Link>
                     </SidebarMenuButton>
                   </SidebarMenuItem>
                 ))}
@@ -131,6 +135,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
           </SidebarGroup>
         ))}
       </SidebarContent>
+
       <SidebarRail />
       <div className="flex items-center justify-between gap-4 p-2">
         {/* User Profile Section */}

@@ -101,11 +101,11 @@ export function PieData() {
   const totalFiles = chartData.reduce((acc, curr) => acc + curr.Files, 0);
 
   return (
-    <Card className="flex flex-col max-w-[432] max-h-fit">
+    <Card className="grid grid-cols-1 lg:grid-cols-3 gap-6 my-5">
       <CardHeader className="pb-0">
-
+        <h2 className="font-bold text-2xl">Upload data</h2>
       </CardHeader>
-      <CardContent className="">
+      <CardContent>
         <ChartContainer
           config={chartConfig}
           className="mx-auto aspect-square max-h-60"
