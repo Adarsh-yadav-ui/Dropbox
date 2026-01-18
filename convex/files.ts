@@ -14,13 +14,13 @@ export const getAllPublicFiles = query({
   },
 });
 export const getRecentFilesForUser = query({
-  args: { userId: v.id("users") },
+  args: { userId: v.id("users"), quanitity: v.number() },
   handler: async (ctx, args) => {
     return await ctx.db
       .query("files")
       .filter((q) => q.eq(q.field("userId"), args.userId))
       .order("desc")
-      .take(4);
+      .take(args.quanitity);
   },
 });
 
@@ -73,6 +73,7 @@ export const createFile = mutation({
     });
   },
 });
+
 export const deleteFile = mutation({
   args: {
     _id: v.id("files"),
