@@ -1,6 +1,6 @@
 "use client";
 
-import { useQuery } from "convex/react";
+import { useMutation, useQuery } from "convex/react";
 import { api } from "../../../convex/_generated/api";
 import { PieData } from "../../components/pieChart";
 import { FileCard } from "../../components/fileCard";
@@ -12,13 +12,11 @@ import {
   File,
   FolderOpen,
   ArrowUpRight,
-  MoreVertical,
 } from "lucide-react";
 import Link from "next/link";
-
 import { useState } from "react";
+
 import { MoreHorizontalIcon } from "lucide-react";
-import { Button } from "../../components/ui/button";
 import {
   Dialog,
   DialogClose,
@@ -36,15 +34,30 @@ import {
   DropdownMenuLabel,
   DropdownMenuTrigger,
 } from "../../components/ui/dropdown-menu";
-import { Field, FieldGroup, FieldLabel } from "../../components/ui/field";
-import { Input } from "../../components/ui/input";
 import { Label } from "../../components/ui/label";
 import { Textarea } from "../../components/ui/textarea";
 import { Spinner } from "../../components/ui/spinner";
+import { Button } from "../../components/ui/button";
+import { Input } from "../../components/ui/input";
+import { UpdateFileDialog } from "../../components/Updatefiledialog";
+import { Id } from "../../../convex/_generated/dataModel";
 
 export default function Page() {
-  const [showNewDialog, setShowNewDialog] = useState(false);
   const [showShareDialog, setShowShareDialog] = useState(false);
+  const [updateFileState, setUpdateFileState] = useState<{
+    isOpen: boolean;
+    fileId: string | null;
+    fileName: string;
+    fileDescription: string;
+    fileVisibility: "public" | "private";
+  }>({
+    isOpen: false,
+    fileId: null,
+    fileName: "",
+    fileDescription: "",
+    fileVisibility: "private",
+  });
+
   const currentUser = useQuery(api.users.current);
   const fileDataForUser = useQuery(api.files.getFilesForUser, {
     userId: currentUser?._id,
@@ -164,6 +177,16 @@ export default function Page() {
     quanitity: 10,
   });
 
+  const handleUpdateFile = (item: any) => {
+    setUpdateFileState({
+      isOpen: true,
+      fileId: item._id,
+      fileName: item.name,
+      fileDescription: item.description || "",
+      fileVisibility: item.visibility,
+    });
+  };
+
   return (
     <div className="min-h-screen bg-zinc-50 dark:bg-zinc-950">
       <div className="mx-auto max-w-7xl px-6 py-12">
@@ -256,7 +279,6 @@ export default function Page() {
               ) : (
                 <div className="space-y-3">
                   {recentFiveFiles.map((item) => {
-                    // Get icon and color based on file type
                     const fileConfig = fileTypeConfig.find(
                       (config) =>
                         config.fileType === item.fileType ||
@@ -276,10 +298,10 @@ export default function Page() {
                     });
 
                     return (
-                      <div key={item._id} className="flex items-center">
+                      <div key={item._id} className="flex items-center gap-3">
                         <Link
                           href={`/dashboard/files/${item._id}`}
-                          className="flex items-center gap-3 p-3 rounded-lg hover:bg-zinc-50 dark:hover:bg-zinc-800 transition-colors group"
+                          className="flex items-center gap-3 p-3 rounded-lg hover:bg-zinc-50 dark:hover:bg-zinc-800 transition-colors group flex-1 min-w-0"
                         >
                           <div
                             className={`w-10 h-10 rounded-full ${color} flex items-center justify-center shrink-0`}
@@ -289,7 +311,7 @@ export default function Page() {
                               strokeWidth={2}
                             />
                           </div>
-                          <div className="flex-1 min-w-0">
+                          <div className="flex-1 min-w-0 overflow-hidden">
                             <p className="text-sm font-medium text-zinc-900 dark:text-zinc-100 truncate">
                               {item.name}
                             </p>
@@ -298,6 +320,7 @@ export default function Page() {
                             </p>
                           </div>
                         </Link>
+
                         <DropdownMenu modal={false}>
                           <DropdownMenuTrigger asChild className="mx-auto mr-3">
                             <Button
@@ -309,12 +332,14 @@ export default function Page() {
                             </Button>
                           </DropdownMenuTrigger>
                           <DropdownMenuContent className="w-40" align="end">
-                            <DropdownMenuLabel>File Actions</DropdownMenuLabel>
+                            <DropdownMenuLabel className="font-extrabold text-[14px] dark:text-zinc-400">
+                              File Actions
+                            </DropdownMenuLabel>
                             <DropdownMenuGroup>
                               <DropdownMenuItem
-                                onSelect={() => setShowNewDialog(true)}
+                                onSelect={() => handleUpdateFile(item)}
                               >
-                                New File...
+                                Update File
                               </DropdownMenuItem>
                               <DropdownMenuItem
                                 onSelect={() => setShowShareDialog(true)}
@@ -327,43 +352,12 @@ export default function Page() {
                             </DropdownMenuGroup>
                           </DropdownMenuContent>
                         </DropdownMenu>
-                        <Dialog
-                          open={showNewDialog}
-                          onOpenChange={setShowNewDialog}
-                        >
-                          <DialogContent className="sm:max-w-[425px]">
-                            <DialogHeader>
-                              <DialogTitle>Create New File</DialogTitle>
-                              <DialogDescription>
-                                Provide a name for your new file. Click create
-                                when you&apos;re done.
-                              </DialogDescription>
-                            </DialogHeader>
-                            <FieldGroup className="pb-3">
-                              <Field>
-                                <FieldLabel htmlFor="filename">
-                                  File Name
-                                </FieldLabel>
-                                <Input
-                                  id="filename"
-                                  name="filename"
-                                  placeholder="document.txt"
-                                />
-                              </Field>
-                            </FieldGroup>
-                            <DialogFooter>
-                              <DialogClose asChild>
-                                <Button variant="outline">Cancel</Button>
-                              </DialogClose>
-                              <Button type="submit">Create</Button>
-                            </DialogFooter>
-                          </DialogContent>
-                        </Dialog>
+
                         <Dialog
                           open={showShareDialog}
                           onOpenChange={setShowShareDialog}
                         >
-                          <DialogContent className="sm:max-w-[425px]">
+                          <DialogContent className="sm:max-w-106.5">
                             <DialogHeader>
                               <DialogTitle>Share File</DialogTitle>
                               <DialogDescription>
@@ -371,8 +365,8 @@ export default function Page() {
                                 file.
                               </DialogDescription>
                             </DialogHeader>
-                            <FieldGroup className="py-3">
-                              <Field>
+                            <div className="py-3 space-y-4">
+                              <div>
                                 <Label htmlFor="email">Email Address</Label>
                                 <Input
                                   id="email"
@@ -380,19 +374,21 @@ export default function Page() {
                                   type="email"
                                   placeholder="shadcn@vercel.com"
                                   autoComplete="off"
+                                  className="mt-1"
                                 />
-                              </Field>
-                              <Field>
-                                <FieldLabel htmlFor="message">
+                              </div>
+                              <div>
+                                <Label htmlFor="message">
                                   Message (Optional)
-                                </FieldLabel>
+                                </Label>
                                 <Textarea
                                   id="message"
                                   name="message"
                                   placeholder="Check out this file"
+                                  className="mt-1"
                                 />
-                              </Field>
-                            </FieldGroup>
+                              </div>
+                            </div>
                             <DialogFooter>
                               <DialogClose asChild>
                                 <Button variant="outline">Cancel</Button>
@@ -409,7 +405,22 @@ export default function Page() {
             </div>
           </div>
         </div>
-          <PieData />
+
+        {/* Update File Dialog */}
+        {updateFileState.fileId && (
+          <UpdateFileDialog
+            isOpen={updateFileState.isOpen}
+            onOpenChange={(open) =>
+              setUpdateFileState((prev) => ({ ...prev, isOpen: open }))
+            }
+            fileId={updateFileState.fileId as Id<"files">}
+            currentName={updateFileState.fileName}
+            currentDescription={updateFileState.fileDescription}
+            currentVisibility={updateFileState.fileVisibility}
+          />
+        )}
+
+        <PieData />
       </div>
     </div>
   );
