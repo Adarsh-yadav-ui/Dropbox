@@ -30,6 +30,7 @@ import {
 } from "../components/ui/sidebar";
 import { AnimatedThemeToggler } from "./animated-theme-toggler";
 import { api } from "../../convex/_generated/api";
+import { usePathname } from "next/navigation";
 
 const data = {
   navMain: [
@@ -74,6 +75,8 @@ const data = {
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   const currentUser = useQuery(api.users.current);
+  const pathname = usePathname();
+  const url = pathname.replace("/dashboard/", "").toLowerCase();
 
   return (
     <Sidebar {...props}>
@@ -98,6 +101,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         </Link>
         <SearchForm />
       </SidebarHeader>
+
       <SidebarContent>
         {/* We create a SidebarGroup for each parent. */}
 
@@ -107,25 +111,19 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
               {item?.title}
             </SidebarGroupLabel>
             <SidebarGroupContent>
-              <SidebarMenu className="space-y-3">
+              <SidebarMenu className="space-y-2">
                 {item?.items.map((menuItem, index) => (
                   <SidebarMenuItem key={menuItem?.title}>
                     <SidebarMenuButton asChild>
                       <Link
                         href={menuItem?.url}
                         className={`
-                  flex items-center gap-4 px-6 py-4.5 rounded-full transition-all w-full
-                  ${
-                    index === 0
-                      ? "bg-[#FF6B7A] hover:bg-[#cc5561] text-white shadow-lg "
-                      : "text-gray-400 hover:bg-gray-100"
-                  }
-                `}
+    flex items-center gap-4 px-6 py-4.5 rounded-full transition-all w-full overflow-hidden 
+    ${pathname === menuItem.url ? "text-white shadow-lg bg-zinc-700 font-semibold" : ""}
+  `}
                       >
                         <menuItem.icon className="size-6" />
-                        <span className="font-semibold text-base">
-                          {menuItem?.title}
-                        </span>
+                        <span className="fo text-base">{menuItem?.title}</span>
                       </Link>
                     </SidebarMenuButton>
                   </SidebarMenuItem>

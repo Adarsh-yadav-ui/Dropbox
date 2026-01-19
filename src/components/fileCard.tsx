@@ -49,7 +49,7 @@ export function FileCard({
         <Tooltip delayDuration={250}>
           <TooltipTrigger className="w-full">
             <div className="flex items-center gap-2.5 text-sm text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-200 transition-colors">
-              <Clock className="w-4 h-4 flex-shrink-0" />
+              <Clock className="w-4 h-4 shrink-0" />
               <div className="flex flex-col items-start min-w-0">
                 <span className="text-xs text-zinc-500 dark:text-zinc-500 mb-0.5">Last uploaded</span>
                 <span className="font-normal truncate w-full text-left">{hoursDate}</span>

@@ -35,7 +35,17 @@ export const getRecentFileForUserAsType = query({
       .take(1);
   },
 });
-
+export const getFileForUserAsType = query({
+  args: { userId: v.id("users"), fileType: v.string() },
+  handler: async (ctx, args) => {
+    return await ctx.db
+      .query("files")
+      .filter((q) => q.eq(q.field("userId"), args.userId))
+      .filter((q) => q.eq(q.field("fileType"), args.fileType))
+      .order("desc")
+      .collect();
+  },
+});
 export const getFileById = query({
   args: { fileId: v.id("files") },
   handler: async (ctx, args) => {
@@ -80,5 +90,27 @@ export const deleteFile = mutation({
   },
   async handler(ctx, args) {
     return ctx.db.delete(args._id);
+  },
+});
+
+export const updateFile = mutation({
+  args: {
+    id: v.id("files"),
+    name: v.optional(v.string()),
+    description: v.optional(v.string()),
+    visibility: v.optional(v.string()),
+    fileType: v.optional(v.string()),
+  },
+  handler: async (ctx, args) => {
+    const { id, ...updates } = args;
+
+    // Optional: Verify the file exists
+    const existingFile = await ctx.db.get(id);
+    if (!existingFile) {
+      throw new Error("File not found");
+    }
+    await ctx.db.patch(id, updates);
+
+    return { success: true };
   },
 });
